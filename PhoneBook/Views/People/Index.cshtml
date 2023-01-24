@@ -1,0 +1,34 @@
+﻿@model PhoneBook.Models.PeopleViewModel
+
+@{
+    Layout = null;
+}
+
+
+@foreach (var item in Model.People)
+{
+    <a id="id@(item.Id)" href="#id@(item.Id)" class="list-group-item list-group-item-action person-row" data-id="@item.Id">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <img src="@item.ThumbnailPicture" />
+                </div>
+                <div class="col">@item.Title</div>
+                <div class="col">@item.FirstName</div>
+                <div class="col">@item.LastName</div>
+                <div class="col">@item.Dob.ToShortDateString()</div>
+            </div>
+        </div>
+    </a>
+}
+@if (Model.People.Count() == Model.Parameters.Take)
+{
+    <button type="button" onclick="loadMore(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Parameters));" class="btn btn-success show-more my-3">Показать еще...</button>
+}
+
+@if (Model.People.Count() == 0 && Model.Parameters.Skip == Model.Parameters.Take)
+{
+    <div class="alert alert-danger mt-5 text-center" role="alert">
+        Список пуст
+    </div>
+}

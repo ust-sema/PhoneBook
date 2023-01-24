@@ -1,0 +1,74 @@
+﻿@model PhoneBook.Models.HomeViewModel
+
+@{
+    ViewBag.Title = "Телефонный справочник";
+}
+
+<nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light mb-3">
+    <a class="navbar-brand" href="@Url.Action("Index","Home")">ТС</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <form class="form-inline my-2 my-lg-0" action="@Url.Action("Search","Home")">
+            <input name="phrase" class="form-control mr-sm-2" type="search" placeholder="Искать по Ф.И.О" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Поиск</button>
+        </form>
+        <form class="form-inline ml-1 my-2 my-lg-0" action="@Url.Action("FiltrByDOB","Home")">
+            <input name="date" class="form-control mr-sm-2" type="date" placeholder="День рождения">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Фильтр</button>
+        </form>
+        <ul class="navbar-nav mr-auto ml-3">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Сортировка
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="@Url.Action("SortByName","Home")">По Ф.И.О.</a>
+                    <a class="dropdown-item" href="@Url.Action("SortByDOB","Home")">По дате рождения</a>
+                </div>
+            </li>
+        </ul>
+
+        <a class="nav-item nav-link loader-start" href="#" onclick="loadRecords();">Записей в БД: @(Model.RecordsLoaded). Загрузить еще...</a>
+        <div class="spinner-grow text-primary d-none loader-wait" role="status">
+            <span class="sr-only">Загрузка...</span>
+        </div>
+        <span class="navbar-text d-none loader-wait">Загружаем...</span>
+
+        @if (Session["CurrentUser"] != null)
+        {
+            var usr = Session["CurrentUser"] as PhoneBook.Models.Person; 
+            <span id="loggedUser" class="navbar-text ml-auto">Пользователь: @usr.Title @usr.FirstName @usr.LastName</span>
+            <a class="btn btn-primary ml-2" href="@Url.Action("Logout", "Login")" role="button">Выход</a>
+        }
+        else
+        {
+            <span id="loggedUser" class="navbar-text ml-auto">Вход не выполнен</span>
+            <a class="btn btn-primary ml-2" href="@Url.Action("Index", "Login")" role="button">Вход</a>
+        }
+    </div>
+</nav>
+
+<div id="peopleList" class="list-group">
+    @Html.Partial("~/Views/People/Index.cshtml", Model.PeopleViewModel)
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" id="pbModal">
+    <div class="modal-dialog kl-modal">
+        <div id="pbModalContent" class="modal-content"></div>
+    </div>
+</div>
+
+<div id="modalLoading" class="d-none">
+    <div class="row justify-content-center py-5 my-5">
+        <div class="spinner-grow text-primary d-none loader-wait" role="status">
+            <span class="sr-only">Загрузка...</span>
+        </div>
+    </div>
+</div>
+
+@section PageScripts{
+    <script src="~/Scripts/home.js"></script>
+}
